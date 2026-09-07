@@ -1,7 +1,14 @@
-import * as jwt from 'jsonwebtoken';
+import { expressjwt as jwt } from 'express-jwt';
 import * as express from 'express';
 
-const SECRET = process.env.JWT_SECRET || 'superSecret';
+/**
+ * Clave de firma cargada exclusivamente desde el entorno.
+ * Sin valor por defecto embebido: si falta, el arranque debe fallar.
+ */
+const SECRET = process.env.JWT_SECRET;
+if (!SECRET) {
+  throw new Error('JWT_SECRET no esta definido. Configure la clave de firma en el entorno.');
+}
 
 const getTokenFromHeaders = (req: express.Request): string | null => {
   if (
@@ -14,48 +21,22 @@ const getTokenFromHeaders = (req: express.Request): string | null => {
 };
 
 /**
- * VULNERABLE (API2:2023 - Broken Authentication):
- * El middleware decide el algoritmo y la clave a partir de la propia cabecera
- * del token (alg-confusion). Si el atacante envia {"alg":"none"} el servidor
- * verifica sin clave y acepta un token sin firma. Ademas no exige expiracion.
- * Resultado: se puede forjar un token con user.id arbitrario y suplantar a
- * cualquier usuario, incluido el administrador, sin conocer la clave secreta.
+ * REMEDIACION (API2:2023): el algoritmo se fija en el servidor (HS256), nunca se
+ * deriva de la cabecera del token. Esto neutraliza alg:none y la confusion de
+ * algoritmos. express-jwt rechaza automaticamente un token con exp vencido.
  */
-const verifyVulnerable = (token: string): any => {
-  const decoded: any = jwt.decode(token, { complete: true });
-  const alg: string = decoded?.header?.alg || 'HS256';
-  const key: string = alg === 'none' ? '' : SECRET;
-  return jwt.verify(token, key, { algorithms: [alg as jwt.Algorithm] });
-};
-
-const unauthorized = (next: express.NextFunction) => {
-  const err: any = new Error('missing authorization credentials');
-  err.name = 'UnauthorizedError';
-  next(err);
-};
-
 const auth = {
-  required: (req: any, res: express.Response, next: express.NextFunction) => {
-    const token = getTokenFromHeaders(req);
-    if (!token) return unauthorized(next);
-    try {
-      req.auth = verifyVulnerable(token);
-      next();
-    } catch (err: any) {
-      err.name = 'UnauthorizedError';
-      next(err);
-    }
-  },
-  optional: (req: any, res: express.Response, next: express.NextFunction) => {
-    const token = getTokenFromHeaders(req);
-    if (!token) return next();
-    try {
-      req.auth = verifyVulnerable(token);
-    } catch {
-      /* token invalido: continua como anonimo */
-    }
-    next();
-  },
+  required: jwt({
+    secret: SECRET,
+    getToken: getTokenFromHeaders,
+    algorithms: ['HS256'],
+  }),
+  optional: jwt({
+    secret: SECRET,
+    credentialsRequired: false,
+    getToken: getTokenFromHeaders,
+    algorithms: ['HS256'],
+  }),
 };
 
 export default auth;

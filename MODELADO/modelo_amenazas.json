@@ -105,7 +105,8 @@
               },
               "body": {
                 "stroke": "#333333",
-                "strokeWidth": 1.5
+                "strokeWidth": 1.5,
+                "strokeDasharray": "0"
               }
             },
             "visible": true,
@@ -138,7 +139,8 @@
               },
               "body": {
                 "stroke": "#333333",
-                "strokeWidth": 1.5
+                "strokeWidth": 1.5,
+                "strokeDasharray": "0"
               }
             },
             "visible": true,
@@ -171,7 +173,8 @@
               },
               "body": {
                 "stroke": "#333333",
-                "strokeWidth": 1.5
+                "strokeWidth": 1.5,
+                "strokeDasharray": "0"
               }
             },
             "visible": true,
@@ -233,7 +236,8 @@
               },
               "body": {
                 "stroke": "#333333",
-                "strokeWidth": 1.5
+                "strokeWidth": 1.5,
+                "strokeDasharray": "0"
               }
             },
             "visible": true,
@@ -319,11 +323,13 @@
               },
               "topLine": {
                 "stroke": "#333333",
-                "strokeWidth": 1.5
+                "strokeWidth": 1.5,
+                "strokeDasharray": "0"
               },
               "bottomLine": {
                 "stroke": "#333333",
-                "strokeWidth": 1.5
+                "strokeWidth": 1.5,
+                "strokeDasharray": "0"
               }
             },
             "visible": true,

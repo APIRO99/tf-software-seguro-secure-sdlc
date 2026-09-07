@@ -1,74 +1,47 @@
-# ![Node/Express/Prisma Example App](project-logo.png)
+# TF Software Seguro — Ciclo de Vida Completo (Secure SDLC)
 
-[![Build Status](https://travis-ci.org/anishkny/node-express-realworld-example-app.svg?branch=master)](https://travis-ci.org/anishkny/node-express-realworld-example-app)
+Auditoría, remediación y automatización de seguridad sobre una API REST basada en
+RealWorld (Conduit), Node.js/Express + Prisma + SQLite con autenticación JWT.
 
-> ### Example Node (Express + Prisma) codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld-example-apps) API spec.
+Repositorio del Trabajo Final. Maestría en Ingeniería de Software, curso Software Seguro
+(Universidad Rafael Landívar). Autor: Andres Jose Pineda Robles (EST1067817).
 
-<a href="https://thinkster.io/tutorials/node-json-api" target="_blank"><img width="454" src="https://raw.githubusercontent.com/gothinkster/realworld/master/media/learn-btn-hr.png" /></a>
+## Historia del repositorio (rojo → verde)
 
-## Getting Started
+El proyecto se auditó con el ciclo completo. La primera confirmación introduce los
+cuatro vectores obligatorios y deja las dependencias en versión vulnerable; la segunda
+los remedia. El pipeline DevSecOps queda en **rojo** sobre la primera y en **verde**
+sobre la segunda.
 
-### Prerequisites
+| Commit | Estado | Pipeline |
+|---|---|---|
+| `audit: variante vulnerable...` | vulnerable | ROJO (3/3 compuertas fallan) |
+| `fix: remediacion de codigo y dependencias...` | remediado | VERDE (3/3 aprueban) |
 
-Run the following command to install dependencies:
+## Vectores auditados
 
-```shell
+| ID | OWASP | Endpoint | Estado |
+|---|---|---|---|
+| A03 | A03:2021 Inyección SQL | `GET /api/articles-search` | remediado (consulta parametrizada) |
+| A01 | A01:2021 Broken Access Control | `GET /api/admin/users` | remediado (middleware RBAC) |
+| API1 | API1:2023 BOLA / IDOR | `GET /api/members/:id` | remediado (validación de propiedad) |
+| API2 | API2:2023 Broken Authentication | middleware JWT | remediado (HS256 fijo + exp) |
+
+## Pipeline DevSecOps
+
+`.github/workflows/devsecops.yml` con tres compuertas bloqueantes:
+
+- **Gitleaks** — secretos en el código.
+- **Semgrep** — SAST con reglas OWASP propias (`.semgrep/reglas-tf.yml`) más OWASP Top 10 y Node/JS.
+- **Trivy** — SCA de dependencias por severidad HIGH/CRITICAL.
+
+## Ejecución local
+
+```bash
 npm install
+cp .env.example .env   # definir JWT_SECRET
+npx prisma migrate dev
+npm start              # API en http://localhost:3000
 ```
 
-### Environment variables
-
-This project depends on some environment variables.
-If you are running this project locally, create a `.env` file at the root for these variables.
-Your host provider should included a feature to set them there directly to avoid exposing them.
-
-Here are the required ones:
-
-```
-DATABASE_URL=
-JWT_SECRET=
-NODE_ENV=production
-```
-
-### Generate your Prisma client
-
-Run the following command to generate the Prisma Client which will include types based on your database schema:
-
-```shell
-npx prisma generate
-```
-
-### Apply any SQL migration script
-
-Run the following command to create/update your database based on existing sql migration scripts:
-
-```shell
-npx prisma migrate deploy
-```
-
-### Run the project
-
-Run the following command to run the project:
-
-```shell
-npx nx serve api
-```
-
-### Seed the database
-
-The project includes a seed script to populate the database:
-
-```shell
-npx prisma db seed
-```
-
-## Deploy on a remote server
-
-Run the following command to:
-- install dependencies
-- apply any new migration sql scripts
-- run the server
-
-```shell
-npm ci && npx prisma migrate deploy && node dist/api/main.js
-```
+> La clave de firma JWT se carga solo desde `JWT_SECRET`. El arranque falla si no está definida.

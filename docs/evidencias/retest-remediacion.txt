@@ -1,0 +1,31 @@
+################################################################
+# RE-TEST DE REMEDIACION  (mismos payloads, codigo corregido)
+################################################################
+
+== A03:2021 Inyeccion SQL ==
+$ curl -G 'http://localhost:3000/api/articles-search' --data-urlencode "q=%' UNION SELECT id, email, password FROM User-- "
+{
+    "results": []
+}
+-> El payload se trata como texto literal. 0 credenciales expuestas.
+
+== A01:2021 Broken Access Control ==
+# Usuario normal contra el panel admin:
+$ curl -i 'http://localhost:3000/api/admin/users' -H 'Authorization: Token <victima>'  =>  HTTP 403
+{"message":"Acceso restringido a administradores"}
+# Control positivo: admin real accede =>  HTTP 
+  HTTP 200
+
+== API1:2023 BOLA / IDOR ==
+# victima(id13) intenta leer perfil admin(id1)  =>  HTTP 403
+{"message":"No autorizado para ver este recurso"}
+# victima leyendo su propio perfil (id13)  =>  HTTP 200
+
+== API2:2023 Broken Authentication (JWT alg:none) ==
+# Token forjado: eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjp7ImlkIjoxfX0.
+$ curl 'http://localhost:3000/api/user' -H 'Authorization: Token <forjado>'  =>  HTTP 401
+{"status":"error","message":"missing authorization credentials"}
+# Control positivo: token HS256 legitimo  =>  HTTP 200
+
+Conclusion: los cuatro vectores quedan neutralizados y las rutas legitimas
+siguen operativas (sin regresiones funcionales).

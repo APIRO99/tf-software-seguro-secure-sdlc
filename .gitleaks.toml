@@ -1,0 +1,16 @@
+title = "Configuracion Gitleaks - TF Software Seguro"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "hardcoded-jwt-fallback-secret"
+description = "Clave de firma JWT embebida como valor por defecto en el codigo"
+regex = '''JWT_SECRET\s*\|\|\s*['"][^'"]+['"]'''
+tags = ["jwt", "secret", "cwe-798"]
+
+[allowlist]
+description = "Artefactos de evidencia del laboratorio: tokens de prueba de una BD local desechable, no son secretos reales"
+paths = [
+  '''docs/evidencias/.*''',
+]

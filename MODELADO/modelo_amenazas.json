@@ -1,0 +1,591 @@
+{
+  "version": "2.3.0",
+  "summary": {
+    "title": "PagosDigitales / Conduit API - Modelo de Amenazas",
+    "owner": "Andres Jose Pineda Robles",
+    "description": "DFD Nivel 1 y matriz STRIDE de la API RealWorld (Conduit) auditada en el TF de Software Seguro. Cuatro amenazas mapeadas a OWASP ASVS v4.0 (Nivel 2) y OWASP Proactive Controls.",
+    "id": 0,
+    "threatModelFramework": "STRIDE"
+  },
+  "detail": {
+    "contributors": [
+      {
+        "name": "Andres Jose Pineda Robles"
+      }
+    ],
+    "diagrams": [
+      {
+        "id": 0,
+        "title": "DFD Nivel 1 - API Conduit",
+        "diagramType": "STRIDE",
+        "placeholder": "",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
+        "version": "2.3.0",
+        "cells": [
+          {
+            "shape": "trust-boundary-curve",
+            "attrs": {
+              "line": {
+                "stroke": "#ff0000",
+                "strokeWidth": 2.5,
+                "strokeDasharray": "5 5",
+                "targetMarker": {
+                  "name": ""
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 0,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Limite de confianza: Internet | Servidor API",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "id": "b-net",
+            "source": {
+              "x": 340,
+              "y": 20
+            },
+            "target": {
+              "x": 340,
+              "y": 430
+            },
+            "vertices": []
+          },
+          {
+            "shape": "trust-boundary-curve",
+            "attrs": {
+              "line": {
+                "stroke": "#ff0000",
+                "strokeWidth": 2.5,
+                "strokeDasharray": "5 5",
+                "targetMarker": {
+                  "name": ""
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 0,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Limite de confianza: Aplicacion | Datos",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "id": "b-db",
+            "source": {
+              "x": 680,
+              "y": 20
+            },
+            "target": {
+              "x": 680,
+              "y": 430
+            },
+            "vertices": []
+          },
+          {
+            "position": {
+              "x": 40,
+              "y": 260
+            },
+            "size": {
+              "width": 150,
+              "height": 60
+            },
+            "attrs": {
+              "text": {
+                "text": "Usuario / Navegador (SPA)"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 1,
+            "id": "n-browser",
+            "data": {
+              "type": "tm.Actor",
+              "name": "Usuario / Navegador (SPA)",
+              "description": "",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            }
+          },
+          {
+            "position": {
+              "x": 40,
+              "y": 60
+            },
+            "size": {
+              "width": 150,
+              "height": 60
+            },
+            "attrs": {
+              "text": {
+                "text": "Atacante (usuario\nautenticado / anonimo)"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5
+              }
+            },
+            "visible": true,
+            "shape": "actor",
+            "zIndex": 1,
+            "id": "n-attacker",
+            "data": {
+              "type": "tm.Actor",
+              "name": "Atacante (usuario\nautenticado / anonimo)",
+              "description": "",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            }
+          },
+          {
+            "position": {
+              "x": 380,
+              "y": 60
+            },
+            "size": {
+              "width": 150,
+              "height": 90
+            },
+            "attrs": {
+              "text": {
+                "text": "Middleware de\nAutenticacion JWT"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5
+              }
+            },
+            "visible": true,
+            "shape": "process",
+            "zIndex": 1,
+            "id": "n-auth",
+            "data": {
+              "type": "tm.Process",
+              "name": "Middleware de\nAutenticacion JWT",
+              "description": "",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": false,
+              "isWebApplication": true,
+              "privilegeLevel": "",
+              "threats": [
+                {
+                  "id": 4,
+                  "title": "API2:2023 Broken Authentication (JWT alg:none)",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Spoofing",
+                  "description": "El middleware deriva el algoritmo de la cabecera del token (alg-confusion) y acepta alg:none; se forja un token sin firma con user.id arbitrario y se suplanta al admin.",
+                  "mitigation": "algorithms:['HS256'] fijo en servidor, expiracion obligatoria y clave solo desde entorno.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 4,
+                  "score": "",
+                  "threatId": 4,
+                  "metadata": [
+                    {
+                      "name": "owasp",
+                      "value": "API2:2023"
+                    },
+                    {
+                      "name": "asvs",
+                      "value": "V3.5.3 / V2.1"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "position": {
+              "x": 380,
+              "y": 250
+            },
+            "size": {
+              "width": 150,
+              "height": 90
+            },
+            "attrs": {
+              "text": {
+                "text": "API REST Node/Express\n(Conduit)"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5
+              }
+            },
+            "visible": true,
+            "shape": "process",
+            "zIndex": 1,
+            "id": "n-api",
+            "data": {
+              "type": "tm.Process",
+              "name": "API REST Node/Express\n(Conduit)",
+              "description": "",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "handlesCardPayment": false,
+              "handlesGoodsOrServices": false,
+              "isWebApplication": true,
+              "privilegeLevel": "",
+              "threats": [
+                {
+                  "id": 2,
+                  "title": "A01:2021 Broken Access Control",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Elevation of privilege",
+                  "description": "GET /api/admin/users solo exige sesion valida; cualquier usuario autenticado (rol user) escala verticalmente y lee el panel administrativo.",
+                  "mitigation": "Middleware RBAC requireAdmin que verifica el rol en BD tras auth.required.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 2,
+                  "score": "",
+                  "threatId": 2,
+                  "metadata": [
+                    {
+                      "name": "owasp",
+                      "value": "A01:2021"
+                    },
+                    {
+                      "name": "asvs",
+                      "value": "V4.1.1 / V4.1.3"
+                    }
+                  ]
+                },
+                {
+                  "id": 3,
+                  "title": "API1:2023 BOLA / IDOR",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Information disclosure",
+                  "description": "GET /api/members/:id devuelve el recurso por id sin validar propiedad; cambiando el numero se enumeran perfiles privados de otros usuarios.",
+                  "mitigation": "Validacion de propiedad contextual: el solicitante solo accede a su recurso (o admin).",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 3,
+                  "score": "",
+                  "threatId": 3,
+                  "metadata": [
+                    {
+                      "name": "owasp",
+                      "value": "API1:2023"
+                    },
+                    {
+                      "name": "asvs",
+                      "value": "V4.2.1"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "position": {
+              "x": 720,
+              "y": 150
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Base de datos\n(usuarios, articulos)"
+              },
+              "topLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5
+              },
+              "bottomLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5
+              }
+            },
+            "visible": true,
+            "shape": "store",
+            "zIndex": 1,
+            "id": "n-db",
+            "data": {
+              "type": "tm.Store",
+              "name": "Base de datos\n(usuarios, articulos)",
+              "description": "",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isALog": false,
+              "storesCredentials": true,
+              "storesInventory": false,
+              "isEncrypted": false,
+              "isSigned": false,
+              "threats": [
+                {
+                  "id": 1,
+                  "title": "A03:2021 Inyeccion SQL",
+                  "status": "Mitigated",
+                  "severity": "High",
+                  "type": "Tampering",
+                  "description": "El endpoint GET /api/articles-search concatena el parametro q en la sentencia y la ejecuta con $queryRawUnsafe. Un UNION SELECT exfiltra correos y hashes de la tabla User.",
+                  "mitigation": "Consultas parametrizadas con $queryRaw (Prisma.sql); la entrada viaja como dato vinculado.",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 1,
+                  "score": "",
+                  "threatId": 1,
+                  "metadata": [
+                    {
+                      "name": "owasp",
+                      "value": "A03:2021"
+                    },
+                    {
+                      "name": "asvs",
+                      "value": "V5.3.4 / V5.3.5"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "targetMarker": {
+                  "name": "block"
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "1. Login / token JWT (HTTPS)",
+              "description": "",
+              "isTrustBoundary": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            },
+            "id": "f-login",
+            "source": {
+              "cell": "n-browser"
+            },
+            "target": {
+              "cell": "n-auth"
+            },
+            "vertices": [
+              {
+                "x": 300,
+                "y": 120
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "targetMarker": {
+                  "name": "block"
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "2. Peticiones API con token",
+              "description": "",
+              "isTrustBoundary": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            },
+            "id": "f-req",
+            "source": {
+              "cell": "n-browser"
+            },
+            "target": {
+              "cell": "n-api"
+            },
+            "vertices": [
+              {
+                "x": 300,
+                "y": 300
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "targetMarker": {
+                  "name": "block"
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "3. Identidad verificada",
+              "description": "",
+              "isTrustBoundary": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            },
+            "id": "f-authcheck",
+            "source": {
+              "cell": "n-auth"
+            },
+            "target": {
+              "cell": "n-api"
+            },
+            "vertices": [
+              {
+                "x": 455,
+                "y": 180
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "targetMarker": {
+                  "name": "block"
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "4. Consultas SQL (Prisma)",
+              "description": "",
+              "isTrustBoundary": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            },
+            "id": "f-query",
+            "source": {
+              "cell": "n-api"
+            },
+            "target": {
+              "cell": "n-db"
+            },
+            "vertices": [
+              {
+                "x": 640,
+                "y": 230
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1.5,
+                "targetMarker": {
+                  "name": "block"
+                }
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "5. Payloads maliciosos",
+              "description": "",
+              "isTrustBoundary": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "HTTPS",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "threats": []
+            },
+            "id": "f-atk",
+            "source": {
+              "cell": "n-attacker"
+            },
+            "target": {
+              "cell": "n-api"
+            },
+            "vertices": [
+              {
+                "x": 250,
+                "y": 150
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "diagramTop": 1,
+    "reviewer": "German Francisco Echeverria Castillo",
+    "threatTop": 4
+  }
+}

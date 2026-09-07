@@ -1,0 +1,43 @@
+rules:
+  - id: prisma-sql-injection-queryrawunsafe
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "Inyeccion SQL (A03:2021 / CWE-89): uso de $queryRawUnsafe con cadena dinamica. Use $queryRaw con Prisma.sql para parametrizar."
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-89"
+      asvs: "5.3.4"
+    patterns:
+      - pattern: "$P.$queryRawUnsafe(...)"
+
+  - id: jwt-algorithm-confusion-none
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "Autenticacion rota (API2:2023 / CWE-347): el algoritmo o la clave se derivan de la cabecera del token; permite alg:none. Fije algorithms:['HS256']."
+    metadata:
+      owasp: "API2:2023 - Broken Authentication"
+      cwe: "CWE-347"
+      asvs: "3.5.3"
+    patterns:
+      - pattern: |
+          $A === 'none' ? '' : $S
+
+  - id: jwt-algorithms-list-includes-none
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "Autenticacion rota (API2:2023 / CWE-347): la lista de algoritmos permitidos incluye 'none'."
+    metadata:
+      owasp: "API2:2023 - Broken Authentication"
+      cwe: "CWE-347"
+    patterns:
+      - pattern-regex: "algorithms:\\s*\\[[^\\]]*['\"]none['\"]"
+
+  - id: hardcoded-jwt-fallback-secret
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: "Secreto embebido (A02:2021 / CWE-798): clave JWT por defecto en el codigo. Cargue la clave solo desde el entorno."
+    metadata:
+      owasp: "A02:2021 - Cryptographic Failures"
+      cwe: "CWE-798"
+    patterns:
+      - pattern-regex: "JWT_SECRET\\s*\\|\\|\\s*['\"][^'\"]+['\"]"

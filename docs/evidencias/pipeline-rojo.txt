@@ -1,25 +1,26 @@
 ==================================================================
- PIPELINE EN ROJO  -  commit vulnerable (ca8dc16)
- Run: https://github.com/APIRO99/tf-software-seguro-secure-sdlc/actions/runs/34078151269
- Resultado global: FAILURE (3 de 3 compuertas fallan -> build bloqueado)
+ PIPELINE EN ROJO  -  commit vulnerable (5eed3dd)
+ Run: https://github.com/APIRO99/tf-software-seguro-secure-sdlc/actions/runs/34078489383
+ Resultado global: FAILURE  (3 de 3 compuertas fallan -> build bloqueado)
 ==================================================================
 
-### Compuerta 1 - SAST (Semgrep) : FALLA  (4 hallazgos, 4 reglas)
-   >> semgrep.prisma-sql-injection-queryrawunsafe   (A03:2021 / CWE-89)
-   >> semgrep.jwt-algorithm-confusion-none          (API2:2023 / CWE-347)
-   >> semgrep.hardcoded-jwt-fallback-secret         (A02:2021 / CWE-798)  src/app/routes/auth/auth.ts
-   >> semgrep.hardcoded-jwt-fallback-secret         (A02:2021 / CWE-798)  src/app/routes/auth/token.utils.ts
-   "Ran 4 rules on 35 files: 4 findings"
+### Compuerta 1 - SAST (Semgrep) : FALLA  (4 hallazgos)
+   >> prisma-sql-injection-queryrawunsafe   A03:2021 / CWE-89
+   >> jwt-algorithm-confusion-none          API2:2023 / CWE-347
+   >> hardcoded-jwt-fallback-secret         A02:2021 / CWE-798   auth.ts
+   >> hardcoded-jwt-fallback-secret         A02:2021 / CWE-798   token.utils.ts
+   Ran 4 rules on 35 files: 4 findings
 
 ### Compuerta 2 - Secret Scanning (Gitleaks) : FALLA  (2 hallazgos)
-   RuleID: hardcoded-jwt-fallback-secret  ->  src/app/routes/auth/auth.ts:4
-   RuleID: hardcoded-jwt-fallback-secret  ->  src/app/routes/auth/token.utils.ts:4
-   "leaks found: 2"
+   hardcoded-jwt-fallback-secret  ->  src/app/routes/auth/auth.ts:4
+   hardcoded-jwt-fallback-secret  ->  src/app/routes/auth/token.utils.ts:4
+   leaks found: 2
 
-### Compuerta 3 - SCA (Trivy) : FALLA  (dependencias con CVE corregibles)
-   form-data       CVE-2025-7783    CRITICAL  (fix 4.0.4)
-   form-data       CVE-2026-12143   HIGH      (fix 4.0.6)
-   jws             CVE-2025-65945   HIGH      (Improper signature verification HS256; fix 3.2.3)
-   body-parser     CVE-2024-45590   HIGH      (DoS; fix 1.20.3)
-   path-to-regexp  CVE-2024-45296   HIGH      (ReDoS; fix 0.1.10+)
+### Compuerta 3 - SCA (Trivy) : FALLA
+   package-lock.json (npm)   Total: 21 (HIGH: 20, CRITICAL: 1)
+   Ejemplos: form-data CVE-2025-7783 (CRITICAL), jws CVE-2025-65945 (HIGH,
+   improper HS256 signature verification), axios CVE-2024-39338 (SSRF, HIGH),
+   body-parser CVE-2024-45590 (HIGH), path-to-regexp CVE-2024-45296 (ReDoS, HIGH).
    trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1  ->  exit 1
+
+Conclusion: 3/3 compuertas en rojo. Build BLOQUEADO.

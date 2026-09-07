@@ -1,0 +1,18 @@
+==================================================================
+ PIPELINE EN VERDE  -  commit remediado (5feed96)
+ Run: https://github.com/APIRO99/tf-software-seguro-secure-sdlc/actions/runs/34078739795
+ Resultado global: SUCCESS  (3 de 3 compuertas aprueban -> build aprobado)
+==================================================================
+
+### Compuerta 1 - SAST (Semgrep) : APRUEBA
+   0 hallazgos sobre las reglas OWASP del proyecto (.semgrep/reglas-tf.yml)
+
+### Compuerta 2 - Secret Scanning (Gitleaks) : APRUEBA
+   Sin secretos: la clave JWT se carga solo desde process.env.JWT_SECRET
+
+### Compuerta 3 - SCA (Trivy) : APRUEBA
+   0 CVE HIGH/CRITICAL corregibles (express 4.22, axios 1.20, body-parser 1.20.6,
+   form-data 4.0.6, path-to-regexp 0.1.13, jws 3.2.3)
+   trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1  ->  exit 0
+
+Conclusion: 3/3 compuertas en verde. Build APROBADO tras la remediacion.

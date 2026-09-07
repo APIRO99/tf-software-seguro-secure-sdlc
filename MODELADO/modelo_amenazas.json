@@ -1,7 +1,7 @@
 {
   "version": "2.3.0",
   "summary": {
-    "title": "PagosDigitales / Conduit API - Modelo de Amenazas",
+    "title": "RealWorld (Conduit) API - Modelo de Amenazas",
     "owner": "Andres Jose Pineda Robles",
     "description": "DFD Nivel 1 y matriz STRIDE de la API RealWorld (Conduit) auditada en el TF de Software Seguro. Cuatro amenazas mapeadas a OWASP ASVS v4.0 (Nivel 2) y OWASP Proactive Controls.",
     "id": 0,
